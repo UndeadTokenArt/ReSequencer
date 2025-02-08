@@ -1,0 +1,174 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.viewport {
+  height: 800px;
+  width: 100%;
+  background-color: #ccc;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 400px;
+  background-color: #333;
+  color: #fff;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.sidebar h2 {
+  margin-top: 0;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  margin: 10px 0;
+}
+
+.sidebar ul li a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+#map {
+  width: 100%;
+  height: 60vh;
+  max-width: 1000px;
+}
+
+.selected {
+  background-color: #007bff;
+  color: white;
+}
+
+textarea {
+  width: 100%;
+  max-width: 1000px;
+  height: 100px;
+  margin: 10px 0;
+  font-size: 16px;
+}
+
+button {
+    width: 100%;
+    max-width: 1000px;
+    padding: 10px;
+    font-size: 18px;
+    margin: 5px 0;
+    cursor: pointer;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 10px 0;
+    background: #f8f9fa;
+    border-radius: 5px;
+    overflow-y: auto;
+    max-height: 600px; /* Prevents long lists from taking over */
+}
+
+li {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+@media (min-width: 768px) {
+    #selected-addresses {
+        flex-direction: row;
+        justify-content: space-around;
+    }
+
+    #leftList, #rightList {
+        width: 48%;
+    }
+}
+
+#selected-addresses {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  max-width: 1000px;
+}
+
+#sortable-list, #tempList {
+  flex: 2;
+  border:1px solid #ccc;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+#leftList, #rightList {
+  width: 100%;
+  max-width: 1000px;
+}
+
+#sortable-list li {
+  cursor: move;
+  padding: 10px;
+  border: 4px solid #ccc;
+  margin-bottom: 5px;
+}
+.custom-marker {
+  position: relative;
+  width: 15px;
+  height: 15px;
+}
+
+.marker-container {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.marker-img {
+  width: 100%;
+  height: 100%;
+}
+
+.marker-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: transparent; /* No background, blends into green dot */
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  text-align: center;
+}
+
+
+

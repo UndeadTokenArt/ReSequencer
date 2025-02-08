@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ReSequencer</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    />
+    <link rel="stylesheet" href="static/styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="sidebar">
+        <textarea
+        id="address-input"
+        placeholder="Paste addresses here, one per line..."
+      ></textarea>
+        <button onclick="addMarkers()">Add address markers to map</button>
+        <button onclick="copySelectedMarkersToClipboard()">Copy list to clipboard</button>
+        <br>
+        <iframe class="viewport" src="Readme.html"></iframe>
+
+      </div>
+      <div class="main-content">
+        <div id="map" style="height: 650px"></div>
+<button id="update-markers-btn">Update Markers</button>
+
+        <div id="selected-addresses">
+          
+          <div id="leftList">
+            <ul id="sortable-list">
+              List of Selected Addresses
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="static/map.js"></script>
+  </body>
+</html>
