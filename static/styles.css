@@ -76,13 +76,13 @@ button {
     margin: 5px 0;
     cursor: pointer;
     border: none;
-    background-color: #007bff;
+    background-color: #1a7532;
     color: white;
-    border-radius: 5px;
+    border-radius: 10px;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #6ce89c;
 }
 
 ul {
