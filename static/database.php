@@ -11,13 +11,10 @@ if (file_exists($envFile)) {
     exit();
 }
 
-$host = $env["DB_HOST"];
-$dbname = $env["DB_NAME"];
-$username = $env["DB_USER"];
-$password = $env["DB_PASS"];
+$dbFile = $env["DB_FILE"];
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
+    $pdo = new PDO("sqlite:$dbFile");
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
     echo json_encode(["error" => "Database connection failed", "message" => $e->getMessage()]);
