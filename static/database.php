@@ -1,4 +1,11 @@
 <?php
+
+// this file is a script that is supposed to initialize a SQLite database for storing addresses.
+// The script is supposed to be run from the command line and uses the PDO extension to interact
+// with the SQLite database. The script loads environment variables from a .env file and creates
+// the database file if it doesn't exist. The script then creates tables for storing addresses
+// and outputs a JSON response indicating whether the database was initialized successfully.
+
 header('Content-Type: application/json');
 
 // Load environment variables
@@ -11,7 +18,7 @@ if (file_exists($envFile)) {
     exit();
 }
 
-$dbFile = $env["DB_FILE"];
+$dbFile = "../data/portlandMetro.sqlite";
 
 // Create database directory if it doesn't exist
 $dbDir = dirname($dbFile);
@@ -27,37 +34,24 @@ try {
     $pdo = new PDO("sqlite:$dbFile");
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Create tables if they don't exist
-    $pdo->exec("CREATE TABLE IF NOT EXISTS addresses (
+    // Create tables
+    $pdo->exec("CREATE TABLE IF NOT EXISTS locations (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        date_created DATETIME DEFAULT CURRENT_TIMESTAMP
+        address_full TEXT NOT NULL,
+        street_name TEXT NOT NULL,
+        mail_city TEXT NOT NULL,
+        state_abbrieviation TEXT NOT NULL,
+        lat REAL,
+        lon REAL
     )");
-
-    $pdo->exec("CREATE TABLE IF NOT EXISTS waypoints (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        route_id INTEGER,
-        address TEXT NOT NULL,
-        latitude REAL,
-        longitude REAL,
-        sequence_order INTEGER,
-        FOREIGN KEY (route_id) REFERENCES addresses(id)
-    )");
-
-    // Verify tables were created
-    $tables = $pdo->query("SELECT name FROM sqlite_master WHERE type='table'")->fetchAll(PDO::FETCH_COLUMN);
-    if (!in_array('addresses', $tables) || !in_array('waypoints', $tables)) {
-        throw new Exception("Failed to create database tables");
-    }
 
 } catch (PDOException $e) {
     echo json_encode(["error" => "Database connection failed", "message" => $e->getMessage()]);
     exit();
-} catch (Exception $e) {
-    echo json_encode(["error" => $e->getMessage()]);
-    exit();
 }
 
-// Return success if everything worked
-echo json_encode(["success" => true, "message" => "Database initialized successfully"]);
+if (basename(__FILE__) == basename($_SERVER['SCRIPT_FILENAME'])) {
+    // Only output a JSON response if this file is run directly.
+    echo json_encode(["success" => true, "message" => "Database initialized successfully"]);
+}
 ?>

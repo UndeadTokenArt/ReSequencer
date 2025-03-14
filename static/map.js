@@ -10,15 +10,15 @@ var greenIcon = L.icon({
 });
 
 // Prompt for API key on page load and store it
-let apiKey = sessionStorage.getItem("apiKey");
-if (!apiKey) {
-  apiKey = prompt("Please enter your OpenCage API key:");
-  if (apiKey && apiKey.match(/^[a-zA-Z0-9]{32}$/)) {
-    sessionStorage.setItem("apiKey", apiKey);
-  } else {
-    alert("Invalid or missing API key. Geolocation features will not work.");
-  }
-}
+// let apiKey = sessionStorage.getItem("apiKey");
+// if (!apiKey) {
+//   apiKey = prompt("Please enter your OpenCage API key:");
+//   if (apiKey && apiKey.match(/^[a-zA-Z0-9]{32}$/)) {
+//     sessionStorage.setItem("apiKey", apiKey);
+//   } else {
+//     alert("Invalid or missing API key. Geolocation features will not work.");
+//   }
+// }
 
 const sortable = document.getElementById("sortable-list");
 
@@ -59,64 +59,72 @@ function initMap() {
 
 // Event listener to select multiple items in the list with CTRL or Shift
 document.getElementById("sortable-list").addEventListener("click", (e) => {
-    if (e.target.tagName === "LI") {
-        if (e.ctrlKey || e.metaKey) {
-            // Ctrl (or Cmd on Mac) + Click allows multiple selection
-            e.target.classList.toggle("selected");
-        } else if (e.shiftKey) {
-            // Shift + Click selects a range of items
-            const items = [...document.querySelectorAll("#sortable-list li")];
-            const firstIndex = items.findIndex(item => item.classList.contains("selected"));
-            const lastIndex = items.indexOf(e.target);
+  if (e.target.tagName === "LI") {
+    if (e.ctrlKey || e.metaKey) {
+      // Ctrl (or Cmd on Mac) + Click allows multiple selection
+      e.target.classList.toggle("selected");
+    } else if (e.shiftKey) {
+      // Shift + Click selects a range of items
+      const items = [...document.querySelectorAll("#sortable-list li")];
+      const firstIndex = items.findIndex((item) =>
+        item.classList.contains("selected")
+      );
+      const lastIndex = items.indexOf(e.target);
 
-            if (firstIndex !== -1) {
-                const range = items.slice(Math.min(firstIndex, lastIndex), Math.max(firstIndex, lastIndex) + 1);
-                range.forEach(item => item.classList.add("selected"));
-            }
-        } else {
-            // Normal click (clears previous selection)
-            document.querySelectorAll("#sortable-list li.selected").forEach(item => item.classList.remove("selected"));
-            e.target.classList.add("selected");
-        }
+      if (firstIndex !== -1) {
+        const range = items.slice(
+          Math.min(firstIndex, lastIndex),
+          Math.max(firstIndex, lastIndex) + 1
+        );
+        range.forEach((item) => item.classList.add("selected"));
+      }
+    } else {
+      // Normal click (clears previous selection)
+      document
+        .querySelectorAll("#sortable-list li.selected")
+        .forEach((item) => item.classList.remove("selected"));
+      e.target.classList.add("selected");
     }
+  }
 });
 
 let draggedItems = [];
 
 document.getElementById("sortable-list").addEventListener("dragstart", (e) => {
-    if (e.target.classList.contains("selected")) {
-        draggedItems = [...document.querySelectorAll("#sortable-list li.selected")];
-    } else {
-        draggedItems = [e.target];
-        document.querySelectorAll("#sortable-list li.selected").forEach(item => item.classList.remove("selected"));
-        e.target.classList.add("selected");
-    }
-    e.dataTransfer.setData("text/plain", ""); // Required for Firefox compatibility
+  if (e.target.classList.contains("selected")) {
+    draggedItems = [...document.querySelectorAll("#sortable-list li.selected")];
+  } else {
+    draggedItems = [e.target];
+    document
+      .querySelectorAll("#sortable-list li.selected")
+      .forEach((item) => item.classList.remove("selected"));
+    e.target.classList.add("selected");
+  }
+  e.dataTransfer.setData("text/plain", ""); // Required for Firefox compatibility
 });
 
 document.getElementById("sortable-list").addEventListener("dragover", (e) => {
-    e.preventDefault();
-    const afterElement = getInsertionPoint(e.clientY);
-    if (afterElement) {
-        sortable.insertBefore(draggedItems[0], afterElement);
-    } else {
-        sortable.appendChild(draggedItems[0]);
-    }
+  e.preventDefault();
+  const afterElement = getInsertionPoint(e.clientY);
+  if (afterElement) {
+    sortable.insertBefore(draggedItems[0], afterElement);
+  } else {
+    sortable.appendChild(draggedItems[0]);
+  }
 });
 
 document.getElementById("sortable-list").addEventListener("drop", (e) => {
-    e.preventDefault();
-    const afterElement = getInsertionPoint(e.clientY);
+  e.preventDefault();
+  const afterElement = getInsertionPoint(e.clientY);
 
-    if (afterElement) {
-        draggedItems.forEach(item => sortable.insertBefore(item, afterElement));
-    } else {
-        draggedItems.forEach(item => sortable.appendChild(item));
-    }
+  if (afterElement) {
+    draggedItems.forEach((item) => sortable.insertBefore(item, afterElement));
+  } else {
+    draggedItems.forEach((item) => sortable.appendChild(item));
+  }
 
-    draggedItems = [];
+  draggedItems = [];
 });
-
 
 // Initialize the map as soon as the page loads
 document.addEventListener("DOMContentLoaded", () => {
@@ -135,20 +143,52 @@ function updateSelectedMarkersFromList() {
 }
 
 function getInsertionPoint(y) {
-    const draggableElements = [...document.querySelectorAll("#sortable-list li:not(.dragging)")];
+  const draggableElements = [
+    ...document.querySelectorAll("#sortable-list li:not(.dragging)"),
+  ];
 
-    return draggableElements.reduce((closest, child) => {
-        const box = child.getBoundingClientRect();
-        const offset = y - box.top - box.height / 2;
+  return draggableElements.reduce(
+    (closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
 
-        if (offset < 0 && offset > closest.offset) {
-            return { offset: offset, element: child };
-        } else {
-            return closest;
-        }
-    }, { offset: Number.NEGATIVE_INFINITY }).element;
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    },
+    { offset: Number.NEGATIVE_INFINITY }
+  ).element;
 }
 
+// In map.js
+
+// Add this function to your map.js file
+function centerMapOnSelectedMarkers() {
+  if (selectedMarkers.length === 0) {
+    console.warn("No markers selected.");
+    return;
+  }
+
+  let totalLat = 0;
+  let totalLng = 0;
+
+  selectedMarkers.forEach((marker) => {
+    totalLat += marker.getLatLng().lat;
+    totalLng += marker.getLatLng().lng;
+  });
+
+  const avgLat = totalLat / selectedMarkers.length;
+  const avgLng = totalLng / selectedMarkers.length;
+
+  map.setView([avgLat, avgLng], 12); // 12 is a reasonable zoom level
+}
+
+// Add this event listener to your map.js file
+document.getElementById("center-map-btn").addEventListener("click", () => {
+  centerMapOnSelectedMarkers();
+});
 
 // Drag-and-drop functionality for the sortable list
 let draggedItem = null;
@@ -156,7 +196,7 @@ let draggedItem = null;
 sortable.addEventListener("dragstart", (e) => {
   draggedItem = e.target;
   e.dataTransfer.setData("text/plain", "");
-  draggedItem.classList.add("dragging"); 
+  draggedItem.classList.add("dragging");
 });
 
 sortable.addEventListener("dragover", (e) => {
@@ -173,16 +213,19 @@ sortable.addEventListener("dragover", (e) => {
 });
 
 sortable.addEventListener("drop", (e) => {
-    e.preventDefault();
-    
-    if (draggedItem && e.target !== draggedItem && !e.target.contains(draggedItem)) {
-        // Do nothing here; the user will click the update button manually.
-    }
+  e.preventDefault();
 
-    draggedItem.classList.remove("dragging"); // Optional: Remove dragging class
-    draggedItem = null;
+  if (
+    draggedItem &&
+    e.target !== draggedItem &&
+    !e.target.contains(draggedItem)
+  ) {
+    // Do nothing here; the user will click the update button manually.
+  }
+
+  draggedItem.classList.remove("dragging"); // Optional: Remove dragging class
+  draggedItem = null;
 });
-
 
 // Get the target element after which the dragged item should be inserted
 function getInsertionPoint(y) {
@@ -235,29 +278,28 @@ function createNumberedIcon(number) {
 }
 
 function updateSelectedMarkersFromList() {
-    const sortableList = document.getElementById("sortable-list");
-    const newOrder = Array.from(sortableList.children).map(item => {
-        return item.textContent.split(".")[1].trim(); // Extract the address without the number
-    });
+  const sortableList = document.getElementById("sortable-list");
+  const newOrder = Array.from(sortableList.children).map((item) => {
+    return item.textContent.split(".")[1].trim(); // Extract the address without the number
+  });
 
-    // Sort selectedMarkers based on the new order
-    selectedMarkers.sort((a, b) => {
-        return newOrder.indexOf(a.address) - newOrder.indexOf(b.address);
-    });
+  // Sort selectedMarkers based on the new order
+  selectedMarkers.sort((a, b) => {
+    return newOrder.indexOf(a.address) - newOrder.indexOf(b.address);
+  });
 
-    // Update the sequence number for both markers and the list
-    selectedMarkers.forEach((marker, index) => {
-        marker.number = index + 1; // Update marker's sequence number
-        marker.setIcon(createNumberedIcon(marker.number)); // Update the icon to reflect new number
-    });
+  // Update the sequence number for both markers and the list
+  selectedMarkers.forEach((marker, index) => {
+    marker.number = index + 1; // Update marker's sequence number
+    marker.setIcon(createNumberedIcon(marker.number)); // Update the icon to reflect new number
+  });
 
-    displaySelectedAddresses(); // Refresh list with updated numbering
+  displaySelectedAddresses(); // Refresh list with updated numbering
 }
 
 document.getElementById("update-markers-btn").addEventListener("click", () => {
-    updateSelectedMarkersFromList();
+  updateSelectedMarkersFromList();
 });
-
 
 function addMarkers() {
   const addressInput = document.getElementById("address-input").value;
@@ -274,15 +316,19 @@ function addMarkers() {
 
   // Geocode all addresses asynchronously
   const geocodePromises = addressWithNumbers.map(async (item) => {
-    const coords = await geocode(item.address); // Fetch coordinates for each address
-    return { coords, ...item };
+    const coords = await getGeolocation(item.address); // Fetch coordinates for each address
+    if (coords && coords.lat !== undefined && coords.lon !== undefined) {
+      return { coords: [coords.lat, coords.lon], ...item }; // Convert to Leaflet format
+    }
+    return null; // Handle cases where geolocation fails
   });
 
   // After all geocoding requests are done, add the markers
   Promise.all(geocodePromises).then((results) => {
     results.forEach((result) => {
-      if (result.coords) {
-        const marker = L.marker(result.coords).addTo(map);
+      if (result && result.coords) {
+        // Ensure valid results
+        const marker = L.marker(result.coords, { icon: greenIcon }).addTo(map);
         marker.address = result.address;
         marker.number = result.number; // Assign the sequence number
         marker.on("click", () => toggleMarkerSelection(marker));
@@ -402,4 +448,37 @@ function geocode(address) {
         resolve(null);
       });
   });
+}
+
+// Function to get geolocation with exact matching
+function getGeolocation(address) {
+    return fetch(`/static/geocode.php?address=${encodeURIComponent(address)}`)
+        .then(response => response.text())
+        .then(text => {
+            console.log("Raw response:", text);  // Keep for debugging
+            try {
+                const data = JSON.parse(text);
+                
+                // Simple exact match check
+                if (data.lat && data.lon) {
+                    return { 
+                        lat: data.lat, 
+                        lon: data.lon, 
+                        source: data.source
+                    };
+                }
+
+                console.error("Geolocation failed:", data.error);
+                return null;
+
+            } catch (e) {
+                console.error("JSON parsing error:", e);
+                console.error("Response text:", text);
+                return null;
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching data:", error);
+            return null;
+        });
 }

@@ -1,45 +1,52 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-header('Content-Type: application/json'); // Ensure JSON response
+header('Content-Type: application/json');
 
-include "database.php"; // Check if this file exists and works properly
+include "database.php"; // Ensure database connection
 
 if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET["address"])) {
     $address = trim($_GET["address"]);
-    $forceApi = isset($_GET["forceApi"]); // Flag to force API call
+    
+    // Debug logging
+    error_log("Received address: '" . $address . "'");
+    
+    // Check if address exists in the database
+    $stmt = $pdo->prepare("
+        SELECT 
+            address_full,
+            lat,
+            lon 
+        FROM locations 
+        WHERE address_full = ?
+    ");
+    $stmt->execute([$address]);
+    
+    // Debug the query parameters
+    error_log("SQL Parameters: " . print_r([$address], true));
+    
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    // Debug the result
+    error_log("Query result: " . print_r($result, true));
 
-    if (!$forceApi) {
-        // Check if address exists in the database
-        $stmt = $pdo->prepare("SELECT latitude, longitude FROM locations WHERE address = ?");
-        $stmt->execute([$address]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($result) {
-            echo json_encode(["latitude" => $result["latitude"], "longitude" => $result["longitude"], "source" => "database"]);
-            exit;
-        }
-    }
-
-    // If not found in DB, query OpenCage API
-    $apiKey = "your_opencage_api_key";
-    $url = "https://api.opencagedata.com/geocode/v1/json?q=" . urlencode($address) . "&key=" . $apiKey;
-    $response = file_get_contents($url);
-    $data = json_decode($response, true);
-
-    if (!empty($data["results"])) {
-        $latitude = $data["results"][0]["geometry"]["lat"];
-        $longitude = $data["results"][0]["geometry"]["lng"];
-
-        // Save to database
-        $stmt = $pdo->prepare("INSERT INTO locations (address, latitude, longitude) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE latitude = VALUES(latitude), longitude = VALUES(longitude)");
-        $stmt->execute([$address, $latitude, $longitude]);
-
-        echo json_encode(["latitude" => $latitude, "longitude" => $longitude, "source" => "api"]);
+    if ($result) {
+        echo json_encode([
+            "lat" => $result["lat"],
+            "lon" => $result["lon"],
+            "source" => "database"
+        ]);
         exit;
     }
 
-    echo json_encode(["error" => "Address not found"]);
+    // If no exact match found, return error with debug info
+    echo json_encode([
+        "error" => "Address not found in database",
+        "message" => "Exact match required for testing",
+        "debug" => [
+            "received_address" => $address
+        ]
+    ]);
+    exit;
 }
 ?>
-
