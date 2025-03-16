@@ -10,15 +10,15 @@ var greenIcon = L.icon({
 });
 
 // Prompt for API key on page load and store it
-// let apiKey = sessionStorage.getItem("apiKey");
-// if (!apiKey) {
-//   apiKey = prompt("Please enter your OpenCage API key:");
-//   if (apiKey && apiKey.match(/^[a-zA-Z0-9]{32}$/)) {
-//     sessionStorage.setItem("apiKey", apiKey);
-//   } else {
-//     alert("Invalid or missing API key. Geolocation features will not work.");
-//   }
-// }
+let apiKey = sessionStorage.getItem("apiKey");
+if (!apiKey) {
+  apiKey = prompt("Please enter your OpenCage API key:");
+  if (apiKey && apiKey.match(/^[a-zA-Z0-9]{32}$/)) {
+    sessionStorage.setItem("apiKey", apiKey);
+  } else {
+    alert("Invalid or missing API key. Geolocation features will not work.");
+  }
+}
 
 const sortable = document.getElementById("sortable-list");
 
@@ -42,14 +42,7 @@ function initMap() {
         ? address
         : `Lat: ${coords[0]}, Lng: ${coords[1]}`;
       marker.on("click", function () {
-        if (!selectedMarkers.includes(marker)) {
-          selectedMarkers.push(marker);
-          marker.getElement().classList.add("selected");
-        } else {
-          selectedMarkers = selectedMarkers.filter((m) => m !== marker);
-          marker.getElement().classList.remove("selected");
-        }
-        displaySelectedAddresses();
+        toggleMarkerSelection(marker);
       });
       selectedMarkers.push(marker);
       displaySelectedAddresses();
@@ -162,9 +155,7 @@ function getInsertionPoint(y) {
   ).element;
 }
 
-// In map.js
-
-// Add this function to your map.js file
+// centers the map on the selected markers from the list
 function centerMapOnSelectedMarkers() {
   if (selectedMarkers.length === 0) {
     console.warn("No markers selected.");
@@ -225,6 +216,25 @@ sortable.addEventListener("drop", (e) => {
 
   draggedItem.classList.remove("dragging"); // Optional: Remove dragging class
   draggedItem = null;
+});
+
+sortable.addEventListener("click", (e) => {
+  if (e.target.classList.contains("delete-btn")) {
+    const markerIndex = e.target.parentNode.dataset.markerIndex;
+    if (markerIndex !== undefined) {
+      const index = parseInt(markerIndex, 10);
+      const marker = selectedMarkers[index];
+
+      // Remove marker from map
+      map.removeLayer(marker);
+
+      // Remove marker from selectedMarkers array
+      selectedMarkers.splice(index, 1);
+
+      // Update the list display
+      displaySelectedAddresses();
+    }
+  }
 });
 
 // Get the target element after which the dragged item should be inserted
@@ -320,7 +330,19 @@ function addMarkers() {
     if (coords && coords.lat !== undefined && coords.lon !== undefined) {
       return { coords: [coords.lat, coords.lon], ...item }; // Convert to Leaflet format
     }
-    return null; // Handle cases where geolocation fails
+    // If database lookup fails, try OpenCage geocoding
+    const openCageCoords = await geocode(item.address);
+    if (openCageCoords) {
+      return {
+        coords: openCageCoords,
+        ...item,
+        source: "opencage",
+      };
+    }
+
+    // Both geocoding attempts failed
+    console.warn(`Failed to geocode address: ${item.address}`);
+    return null;
   });
 
   // After all geocoding requests are done, add the markers
@@ -363,7 +385,10 @@ function displaySelectedAddresses() {
     // Update the list display with sequence numbers
     const addressElement = document.createElement("li");
     addressElement.setAttribute("draggable", "true");
-    addressElement.textContent = `${index + 1}. ${marker.address}`;
+    addressElement.innerHTML = `${index + 1}. ${
+      marker.address
+    } <button class="delete-btn">x</button>`; // Add delete button
+    addressElement.dataset.markerIndex = index; // Store marker index
     sortableList.appendChild(addressElement);
   });
 }
@@ -452,33 +477,86 @@ function geocode(address) {
 
 // Function to get geolocation with exact matching
 function getGeolocation(address) {
-    return fetch(`/static/geocode.php?address=${encodeURIComponent(address)}`)
-        .then(response => response.text())
-        .then(text => {
-            console.log("Raw response:", text);  // Keep for debugging
-            try {
-                const data = JSON.parse(text);
-                
-                // Simple exact match check
-                if (data.lat && data.lon) {
-                    return { 
-                        lat: data.lat, 
-                        lon: data.lon, 
-                        source: data.source
-                    };
-                }
+  return fetch(`/static/geocode.php?address=${encodeURIComponent(address)}`)
+    .then((response) => response.text())
+    .then((text) => {
+      console.log("Raw response:", text); // Keep for debugging
+      try {
+        const data = JSON.parse(text);
 
-                console.error("Geolocation failed:", data.error);
-                return null;
+        // Simple exact match check
+        if (data.lat && data.lon) {
+          return {
+            lat: data.lat,
+            lon: data.lon,
+            source: data.source,
+          };
+        }
 
-            } catch (e) {
-                console.error("JSON parsing error:", e);
-                console.error("Response text:", text);
-                return null;
-            }
-        })
-        .catch(error => {
-            console.error("Error fetching data:", error);
-            return null;
-        });
+        console.error("Geolocation failed:", data.error);
+        return null;
+      } catch (e) {
+        console.error("JSON parsing error:", e);
+        console.error("Response text:", text);
+        return null;
+      }
+    })
+    .catch((error) => {
+      console.error("Error fetching data:", error);
+      return null;
+    });
 }
+
+// select a marker and highlight the corresponding list item
+function toggleMarkerSelection(marker) {
+  // Clear previous selections
+  selectedMarkers.forEach((m) => {
+    m.getElement().classList.remove("marker", "selected");
+    m.getElement()
+      .querySelector(".marker-img")
+      .classList.remove("marker-selected");
+  });
+
+  document.querySelectorAll("#sortable-list li").forEach((item) => {
+    item.classList.remove("markerSelect");
+  });
+
+  // Find and highlight the corresponding list item
+  const listItems = document.querySelectorAll("#sortable-list li");
+  listItems.forEach((item, index) => {
+    if (item.textContent.includes(marker.address)) {
+      // Highlight the list item
+      item.classList.add("markerSelect");
+
+      // Center the map on the selected marker
+      map.setView(marker.getLatLng(), map.getZoom());
+
+      // Scroll the list item into view
+      item.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "start",
+      });
+
+      // Update marker appearance
+      marker.getElement().classList.add("marker", "selected");
+      marker
+        .getElement()
+        .querySelector(".marker-img")
+        .classList.add("marker-selected");
+    }
+  });
+}
+
+map.on("click", function (e) {
+  var coords = [e.latlng.lat, e.latlng.lng];
+  var marker = L.marker(coords, { icon: greenIcon }).addTo(map);
+  reverseGeocode(e.latlng.lat, e.latlng.lng, (address) => {
+    marker.address = address ? address : `Lat: ${coords[0]}, Lng: ${coords[1]}`;
+    marker.on("click", function () {
+      toggleMarkerSelection(marker);
+    });
+    selectedMarkers.push(marker);
+    displaySelectedAddresses();
+  });
+});

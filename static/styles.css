@@ -19,7 +19,7 @@ body {
 
 .sidebar {
   width: 400px;
-  background-color: #333;
+  background-color: #363636;
   color: #fff;
   padding: 20px;
   box-sizing: border-box;
@@ -47,6 +47,7 @@ body {
   flex: 1;
   padding: 20px;
   box-sizing: border-box;
+  background-color: #ffffff;
 }
 
 #map {
@@ -60,6 +61,15 @@ body {
   color: white;
 }
 
+.marker.selected {
+  background-color: #007bff;
+  color: white;
+  border-radius: 30px;
+  transform: scale(1.2); /* Make the marker slightly larger when selected */
+  transition: transform 0.2s ease-in-out;
+  z-index: 1000 !important; /* Ensure selected marker appears above others */
+}
+
 textarea {
   width: 100%;
   max-width: 1000px;
@@ -70,19 +80,19 @@ textarea {
 
 button {
     width: 100%;
-    max-width: 1000px;
+    max-width: 500px;
     padding: 10px;
     font-size: 18px;
     margin: 5px 0;
     cursor: pointer;
     border: none;
-    background-color: #1a7532;
-    color: white;
+    background-color: rgb(2, 71, 49);
+    color: rgb(255, 255, 255);
     border-radius: 10px;
 }
 
 button:hover {
-    background-color: #6ce89c;
+    background-color: #dcdcdc;
 }
 
 ul {
@@ -168,6 +178,24 @@ li {
   font-weight: bold;
   font-size: 18px;
   text-align: center;
+}
+
+.delete-btn {
+  float: right;
+  max-width: 60px;
+  margin-top: auto;
+  background-color: #f77970;
+  color: white;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+}
+
+/* Add styles for the selected marker icon */
+.marker-selected {
+  filter: hue-rotate(120deg); /* Changes the color of the marker */
+  transform: scale(1.2);
+  transition: all 0.2s ease-in-out;
 }
 
 
