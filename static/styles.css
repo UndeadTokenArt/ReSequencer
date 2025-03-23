@@ -70,6 +70,28 @@ body {
   z-index: 1000 !important; /* Ensure selected marker appears above others */
 }
 
+.api-status {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.2);
+    margin: 10px 0;
+}
+
+/* Specific styling for when inside the map */
+#map .api-status {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    z-index: 1000;
+}
+
+#rate-limit, #rate-reset {
+    display: block;
+    white-space: nowrap;
+}
+
 textarea {
   width: 100%;
   max-width: 1000px;

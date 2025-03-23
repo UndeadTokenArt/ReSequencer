@@ -31,10 +31,22 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET["address"])) {
     error_log("Query result: " . print_r($result, true));
 
     if ($result) {
+        $lat = round($result["lat"], 7);
+        $lon = round($result["lon"], 7);
+        
+        // Debug logging
+        error_log("Coordinates being sent: lat={$lat}, lon={$lon}");
+        
         echo json_encode([
-            "lat" => $result["lat"],
-            "lon" => $result["lon"],
-            "source" => "database"
+            "lat" => $lat,
+            "lon" => $lon,
+            "source" => "database",
+            "debug" => [
+                "original_lat" => $result["lat"],
+                "original_lon" => $result["lon"],
+                "rounded_lat" => $lat,
+                "rounded_lon" => $lon
+            ]
         ]);
         exit;
     }

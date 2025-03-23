@@ -438,6 +438,21 @@ function reverseGeocode(lat, lng, callback) {
     });
 }
 
+function updateRateLimit(data) {
+  if (data.rate) {
+    const rateElement = document.getElementById('rate-limit');
+    const resetElement = document.getElementById('rate-reset');
+    
+    // Update remaining calls
+    rateElement.textContent = `API Calls: ${data.rate.remaining}/${data.rate.limit}`;
+    
+    // Calculate and display reset time
+    const resetDate = new Date(data.rate.reset * 1000);
+    const resetTime = resetDate.toLocaleTimeString();
+    resetElement.textContent = `Resets: ${resetTime}`;
+  }
+}
+
 // Geocode address
 function geocode(address) {
   return new Promise((resolve) => {
@@ -457,6 +472,7 @@ function geocode(address) {
         return response.json();
       })
       .then((data) => {
+        updateRateLimit(data);
         if (data.results && data.results[0]) {
           const coords = [
             data.results[0].geometry.lat,

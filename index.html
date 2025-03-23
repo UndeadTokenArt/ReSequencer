@@ -14,22 +14,28 @@
     <div class="container">
       <div class="sidebar">
         <textarea
-        id="address-input"
-        placeholder="Paste addresses here, one per line..."
-      ></textarea>
-        <button onclick="addMarkers()">Add address markers to map</button>
-        <button onclick="copySelectedMarkersToClipboard()">Copy list to clipboard</button>
-        <br>
-        <iframe class="viewport" src="Readme.html"></iframe>
+          id="address-input"
+          placeholder="Paste addresses here, one per line..."
+        ></textarea>
 
+        <button onclick="addMarkers()">Add address markers to map</button>
+        <button onclick="copySelectedMarkersToClipboard()">
+          Copy list to clipboard
+        </button>
+        <br />
+        <iframe class="viewport" src="Readme.html"></iframe>
       </div>
       <div class="main-content">
-        <div id="map" style="height: 650px"></div>
-<button id="update-markers-btn">Update Markers</button>
-<button id="center-map-btn">Center Map on Selected</button>
+        <div id="map" style="height: 650px">
+          <div id="api-status" class="api-status">
+            <span id="rate-limit">API Calls: --/--</span>
+            <span id="rate-reset"></span>
+          </div>
+        </div>
+        <button id="update-markers-btn">Update Markers</button>
+        <button id="center-map-btn">Center Map on Selected</button>
 
         <div id="selected-addresses">
-          
           <div id="leftList">
             <ul id="sortable-list">
               List of Selected Addresses
@@ -41,6 +47,5 @@
 
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
     <script src="static/map.js"></script>
-    <scipt src="static/geolocation.js"></scipt>
   </body>
 </html>

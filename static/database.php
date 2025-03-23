@@ -18,7 +18,7 @@ if (file_exists($envFile)) {
     exit();
 }
 
-$dbFile = "../data/portlandMetro.sqlite";
+$dbFile = "../data/GeolocationDataMarchtwentythird.sqlite";
 
 // Create database directory if it doesn't exist
 $dbDir = dirname($dbFile);
