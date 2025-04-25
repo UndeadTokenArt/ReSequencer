@@ -1,15 +1,37 @@
+/* ==========================================================================
+   Table of Contents
+   ==========================================================================
+
+   1. General Styles
+   2. Sidebar
+   3. Main Content
+   4. Map
+   5. List Styles
+   6. Marker Styles
+   7. Button Styles
+   8. API Status
+   9. Media Queries
+   ========================================================================== */
+
+/* ==========================================================================
+   1. General Styles
+   ========================================================================== */
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
+  background: linear-gradient(to bottom, #666666, #363636);
 }
 
 .viewport {
-  height: 800px;
+  flex: 1;
   width: 100%;
-  background-color: #ccc;
+  height: 50vh;
+  overflow: hidden;
+  background-color: #eefdff;
 }
 
 .container {
@@ -17,9 +39,12 @@ body {
   height: 100vh;
 }
 
+/* ==========================================================================
+   2. Sidebar
+   ========================================================================== */
+
 .sidebar {
   width: 400px;
-  background-color: #363636;
   color: #fff;
   padding: 20px;
   box-sizing: border-box;
@@ -43,19 +68,69 @@ body {
   text-decoration: none;
 }
 
-.main-content {
-  flex: 1;
-  padding: 20px;
-  box-sizing: border-box;
-  background-color: #ffffff;
+textarea {
+  width: 100%;
+  max-width: 1000px;
+  height: 100px;
+  margin: 10px 0;
+  font-size: 16px;
 }
 
+/* ==========================================================================
+   3. Main Content
+   ========================================================================== */
+
+.main-content {
+  flex: 1;
+  max-width: 1000px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   4. Map
+   ========================================================================== */
+
 #map {
-  width: 100%;
+  flex: 1;
   height: 60vh;
+  border: 2px solid #007bff;
+  border-radius: 5px;
+}
+
+/* ==========================================================================
+   5. List Styles
+   ========================================================================== */
+
+#selected-addresses {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
   max-width: 1000px;
 }
 
+#sortable-list,
+#tempList {
+  flex: 2;
+  border: 1px solid #ccc;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+#leftList,
+#rightList {
+  width: 100%;
+  max-width: 1000px;
+}
+
+#sortable-list li {
+  cursor: move;
+  padding: 10px;
+  border: 4px solid #ccc;
+  margin-bottom: 5px;
+}
 .selected {
   background-color: #007bff;
   color: white;
@@ -70,28 +145,6 @@ body {
   z-index: 1000 !important; /* Ensure selected marker appears above others */
 }
 
-.api-status {
-    background: rgba(255, 255, 255, 0.9);
-    padding: 8px 12px;
-    border-radius: 4px;
-    font-size: 12px;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.2);
-    margin: 10px 0;
-}
-
-/* Specific styling for when inside the map */
-#map .api-status {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    z-index: 1000;
-}
-
-#rate-limit, #rate-reset {
-    display: block;
-    white-space: nowrap;
-}
-
 textarea {
   width: 100%;
   max-width: 1000px;
@@ -100,76 +153,25 @@ textarea {
   font-size: 16px;
 }
 
-button {
-    width: 100%;
-    max-width: 500px;
-    padding: 10px;
-    font-size: 18px;
-    margin: 5px 0;
-    cursor: pointer;
-    border: none;
-    background-color: rgb(2, 71, 49);
-    color: rgb(255, 255, 255);
-    border-radius: 10px;
-}
-
-button:hover {
-    background-color: #dcdcdc;
-}
-
 ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 10px 0;
-    background: #f8f9fa;
-    border-radius: 5px;
-    overflow-y: auto;
-    max-height: 600px; /* Prevents long lists from taking over */
+  list-style-type: none;
+  padding: 0;
+  margin: 10px 0;
+  background: #f8f9fa;
+  border-radius: 5px;
+  overflow-y: auto;
+  max-height: 600px; /* Prevents long lists from taking over */
 }
 
 li {
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
-}
-
-@media (min-width: 768px) {
-    #selected-addresses {
-        flex-direction: row;
-        justify-content: space-around;
-    }
-
-    #leftList, #rightList {
-        width: 48%;
-    }
-}
-
-#selected-addresses {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  width: 100%;
-  max-width: 1000px;
-}
-
-#sortable-list, #tempList {
-  flex: 2;
-  border:1px solid #ccc;
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-#leftList, #rightList {
-  width: 100%;
-  max-width: 1000px;
-}
-
-#sortable-list li {
-  cursor: move;
   padding: 10px;
-  border: 4px solid #ccc;
-  margin-bottom: 5px;
+  border-bottom: 1px solid #ccc;
 }
+
+/* ==========================================================================
+   6. Marker Styles
+   ========================================================================== */
+
 .custom-marker {
   position: relative;
   width: 15px;
@@ -195,11 +197,37 @@ li {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: transparent; /* No background, blends into green dot */
+  background: transparent;
   color: white;
   font-weight: bold;
   font-size: 18px;
   text-align: center;
+}
+
+.marker-selected {
+  filter: hue-rotate(120deg);
+  transform: scale(1.2);
+  transition: all 0.2s ease-in-out;
+}
+
+/* ==========================================================================
+   7. Button Styles
+   ========================================================================== */
+
+button {
+  width: 100%;
+  padding: 10px;
+  font-size: 18px;
+  margin: 5px 0;
+  cursor: pointer;
+  border: none;
+  background-color: #007bff;
+  color: rgb(255, 255, 255);
+  border-radius: 10px;
+}
+
+button:hover {
+  background-color: #2398ff;
 }
 
 .delete-btn {
@@ -213,12 +241,44 @@ li {
   cursor: pointer;
 }
 
-/* Add styles for the selected marker icon */
-.marker-selected {
-  filter: hue-rotate(120deg); /* Changes the color of the marker */
-  transform: scale(1.2);
-  transition: all 0.2s ease-in-out;
+/* ==========================================================================
+   8. API Status
+   ========================================================================== */
+
+.api-status {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+  margin: 10px 0;
 }
 
+#map .api-status {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  z-index: 1000;
+}
 
+#rate-limit,
+#rate-reset {
+  display: block;
+  white-space: nowrap;
+}
 
+/* ==========================================================================
+   9. Media Queries
+   ========================================================================== */
+
+@media (min-width: 768px) {
+  #selected-addresses {
+    flex-direction: row;
+    justify-content: space-around;
+  }
+
+  #leftList,
+  #rightList {
+    width: 48%;
+  }
+}
