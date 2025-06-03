@@ -3,7 +3,7 @@ var selectedMarkers = [];
 const geocodeCache = {};
 
 var greenIcon = L.icon({
-  iconUrl: "static/greendot.svg",
+  iconUrl: "../static/greendot.svg",
   iconSize: [60, 60],
   iconAnchor: [30, 30],
   popupAnchor: [1, -34],
@@ -277,7 +277,7 @@ function createNumberedIcon(number) {
   return L.divIcon({
     html: `
             <div class="marker-container">
-                <img src="static/greendot.svg" class="marker-img" />
+                <img src="../static/greendot.svg" class="marker-img" />
                 <div class="marker-label">${number}</div>
             </div>
         `,
@@ -371,7 +371,7 @@ function displaySelectedAddresses() {
     const numberedIcon = L.divIcon({
       html: `
                 <div class="marker-container">
-                    <img src="static/greendot.svg" class="marker-img" />
+                    <img src="../static/greendot.svg" class="marker-img" />
                     <div class="marker-label">${index + 1}</div>
                 </div>
             `,
