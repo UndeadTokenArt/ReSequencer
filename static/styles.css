@@ -1,172 +1,100 @@
-/* ==========================================================================
-   Table of Contents
-   ==========================================================================
-
-   1. General Styles
-   2. Sidebar
-   3. Main Content
-   4. Map
-   5. List Styles
-   6. Marker Styles
-   7. Button Styles
-   8. API Status
-   9. Media Queries
-   ========================================================================== */
-
-/* ==========================================================================
-   1. General Styles
-   ========================================================================== */
-
+/* general styles */
 body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  font-family: Arial, sans-serif;
   background: linear-gradient(to bottom, #666666, #363636);
 }
 
-.viewport {
-  flex: 1;
-  width: 100%;
-  height: 50vh;
-  overflow: hidden;
-  background-color: #eefdff;
-}
-
 .container {
-  display: flex;
-  height: 100vh;
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
 }
 
-/* ==========================================================================
-   2. Sidebar
-   ========================================================================== */
-
-.sidebar {
-  flex: 1;
-  box-shadow: #363636 0px 0px 10px;
-  padding: 20px;
-  box-sizing: border-box;
-}
-
-.sidebar h2 {
-  margin-top: 0;
-}
-
-.sidebar ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.sidebar ul li {
-  margin: 10px 0;
-}
-
-.sidebar ul li a {
-  color: #fff;
-  text-decoration: none;
-}
-
-.moreInfo {
-  background: rgba(255, 255, 255, 0.9);
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: #363636 0px 0px 10px;
-}
-
-textarea {
+.viewport {
   width: 100%;
-  max-width: 1000px;
-  height: 100px;
-  margin: 10px 0;
-  font-size: 16px;
+  height: 60vh;
+  overflow: hidden;
+  background-color: #cdcdcd;
 }
 
-/* ==========================================================================
-   3. Main Content
-   ========================================================================== */
-
+/* main content styles */
 .main-content {
-  margin: 20px;
-  display: flex;
   flex-direction: column;
   flex: 2;
   padding: 20px;
-  box-sizing: border-box;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-/* ==========================================================================
-   4. Map
-   ========================================================================== */
-
-#map {
+/* sidebar styles */
+.sidebar {
+  flex-direction: column;
   flex: 1;
-  width: 1000px;;
-  height: 60vh;
-  border: 3px solid #ff9500;
-  border-radius: 10px;
+  color: #fff;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 /* ==========================================================================
-   5. List Styles
+    2. Button styles
    ========================================================================== */
-
-#selected-addresses {
-  flex-direction: row;
-  align-items: center;
-}
-
-#sortable-list{
-  width: 1000px;
-  border: 1px solid #ccc;
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-#sortable-list li {
-  cursor: move;
-  padding: 10px;
-  border: 4px solid #ccc;
-  margin-bottom: 5px;
-
-}
-.selected {
-  background-color: #007bff;
+button {
+  background-color: #4CAF50; /* Green */
+  border: none;
   color: white;
+  padding: 5px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  width: 100%;
 }
 
-.marker.selected {
-  background-color: #007bff;
+button:hover {
+  background-color: #45a049; /* Darker green */
+}
+
+.delete-btn {
+  float: right;
+  max-width: 60px;
+  margin-top: auto;
+  background-color: #f77970;
   color: white;
-  border-radius: 30px;
-  transform: scale(1.2); /* Make the marker slightly larger when selected */
-  transition: transform 0.2s ease-in-out;
-  z-index: 1000 !important; /* Ensure selected marker appears above others */
+  border: none;
+  border-radius: 3;
+  padding: 2px;
+  cursor: pointer;
 }
 
+.delete-btn:hover {
+  background-color: #f44336;
+}
+/* ==========================================================================
+   3. Input styles
+   ========================================================================== */
 textarea {
   width: 100%;
-  max-width: 1000px;
-  height: 100px;
-  margin: 10px 0;
-  font-size: 16px;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 10px 0;
-  background: #f8f9fa;
-  border-radius: 5px;
-  overflow-y: auto;
-  max-height: 600px; /* Prevents long lists from taking over */
-}
-
-li {
+  height: 10%;
   padding: 10px;
-  border-bottom: 1px solid #ccc;
+  box-sizing: border-box;
+  font-family: monospace;
+  font-size: 14px;
+  border: none;
+  background-color: #f0f0f0;
+}
+
+.fold {
+  background: rgba(255, 255, 255, 0.9);
+  color: #363636;
+  padding: 5px;
+  border-radius: 5px;
+  box-shadow: #363636 0px 0px 10px;
 }
 
 /* ==========================================================================
@@ -212,39 +140,6 @@ li {
 }
 
 /* ==========================================================================
-   7. Button Styles
-   ========================================================================== */
-
- button {
-  width: fit-content;
-  flex: 1;
-  padding: 10px;
-  font-size: 18px;
-  margin: 5px 0;
-  cursor: pointer;
-  border:#945600 2px solid;
-  box-shadow: #363636 0px 0px 10px;
-  background: #ff9500;
-  color: rgb(255, 255, 255);
-  border-radius: 10px;
-}
-
-button:hover {
-  background-color: #ffab23;
-}
-
-.delete-btn {
-  float: right;
-  max-width: 60px;
-  margin-top: auto;
-  background-color: #f77970;
-  color: white;
-  border: none;
-  padding: 2px;
-  cursor: pointer;
-}
-
-/* ==========================================================================
    8. API Status
    ========================================================================== */
 
@@ -270,18 +165,63 @@ button:hover {
   white-space: nowrap;
 }
 
+#map {
+  flex: 1;
+  height: 60vh;
+  border-radius: 10px;
+}
+
 /* ==========================================================================
-   9. Media Queries
+   5. List Styles
    ========================================================================== */
 
-@media (min-width: 768px) {
-  #selected-addresses {
-    flex-direction: row;
-    justify-content: space-around;
-  }
 
-  #leftList,
-  #rightList {
-    width: 48%;
-  }
+
+.marker.selected {
+  background-color: #007bff;
+  color: white;
+  border-radius: 30px;
+  transform: scale(1.2); /* Make the marker slightly larger when selected */
+  transition: transform 0.2s ease-in-out;
+  z-index: 1000 !important; /* Ensure selected marker appears above others */
+}
+/* ==========================================================================
+   7. List Styles
+   ========================================================================== */
+#selected-addresses {
+  align-items: center;
+}
+
+#sortable-list{
+  border: 1px solid #ccc;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+#sortable-list li {
+  cursor: move;
+  padding: 10px;
+  border: 4px solid #ccc;
+  margin-bottom: 5px;
+}
+
+.selected {
+  background-color: #007bff;
+  color: white;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 10px 0;
+  background: #f8f9fa;
+  border-radius: 5px;
+  overflow-y: auto;
+  max-height: 600px; /* Prevents long lists from taking over */
+}
+
+li {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
 }
