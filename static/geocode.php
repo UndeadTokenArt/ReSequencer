@@ -1,4 +1,11 @@
 <?php
+
+// This handles checking if the addresses instered into the text field are in the database. This is so that the API calls to opencage are minimized.
+// The functions here are called in the maps.js file inside the addmarkers() function. 
+// first the input is cleaned to make it findable in the database.
+// right now (6/4/25) the database only includes the portland metro area and in the locations table it looks up the address_full field for a match.
+
+
 // Enable error reporting for debugging
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
