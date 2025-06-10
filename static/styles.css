@@ -7,12 +7,12 @@ body {
 }
 
 .container {
-    display: flex;
-    flex-direction: row;
-    flex: 1;
-    width: 100%;
-    height: 100vh;
-    overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .viewport {
@@ -43,7 +43,7 @@ body {
     2. Button styles
    ========================================================================== */
 button {
-  background-color: #4CAF50; /* Green */
+  background-color: #4caf50; /* Green */
   border: none;
   color: white;
   padding: 5px 32px;
@@ -97,6 +97,43 @@ textarea {
   box-shadow: #363636 0px 0px 10px;
 }
 
+/* ==========================================================================
+   4. loading styles
+   ========================================================================== */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.progress-text {
+  font-size: 14px;
+  color: #dbdbdb;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 /* ==========================================================================
    6. Marker Styles
    ========================================================================== */
@@ -175,8 +212,6 @@ textarea {
    5. List Styles
    ========================================================================== */
 
-
-
 .marker.selected {
   background-color: #007bff;
   color: white;
@@ -192,7 +227,7 @@ textarea {
   align-items: center;
 }
 
-#sortable-list{
+#sortable-list {
   border: 1px solid #ccc;
   list-style-type: none;
   padding: 0;

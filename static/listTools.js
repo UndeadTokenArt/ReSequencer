@@ -29,8 +29,10 @@ document.getElementById("sortable-list").addEventListener("click", (e) => {
   }
 });
 
+// Initialize the sortable list
 let draggedItems = [];
 
+// Add drag-and-drop functionality to the sortable list
 document.getElementById("sortable-list").addEventListener("dragstart", (e) => {
   if (e.target.classList.contains("selected")) {
     draggedItems = [...document.querySelectorAll("#sortable-list li.selected")];
@@ -44,6 +46,7 @@ document.getElementById("sortable-list").addEventListener("dragstart", (e) => {
   e.dataTransfer.setData("text/plain", ""); // Required for Firefox compatibility
 });
 
+// Handle dragover event to allow dropping
 document.getElementById("sortable-list").addEventListener("dragover", (e) => {
   e.preventDefault();
   const afterElement = getInsertionPoint(e.clientY);
@@ -54,6 +57,7 @@ document.getElementById("sortable-list").addEventListener("dragover", (e) => {
   }
 });
 
+// Handle drop event to rearrange items
 document.getElementById("sortable-list").addEventListener("drop", (e) => {
   e.preventDefault();
   const afterElement = getInsertionPoint(e.clientY);
@@ -76,6 +80,7 @@ sortable.addEventListener("dragstart", (e) => {
   draggedItem.classList.add("dragging");
 });
 
+// Handle dragover event to allow dropping
 sortable.addEventListener("dragover", (e) => {
   e.preventDefault(); // Necessary to allow the drop
 
@@ -89,6 +94,7 @@ sortable.addEventListener("dragover", (e) => {
   }
 });
 
+// Handle drop event to rearrange items
 sortable.addEventListener("drop", (e) => {
   e.preventDefault();
 
@@ -104,6 +110,7 @@ sortable.addEventListener("drop", (e) => {
   draggedItem = null;
 });
 
+// Handle click event to delete markers from the list
 sortable.addEventListener("click", (e) => {
   if (e.target.classList.contains("delete-btn")) {
     const markerIndex = e.target.parentNode.dataset.markerIndex;
@@ -159,6 +166,7 @@ sortable.addEventListener("dragover", (e) => {
   }
 });
 
+// Function to create a numbered icon for markers
 function createNumberedIcon(number) {
   return L.divIcon({
     html: `
@@ -173,6 +181,7 @@ function createNumberedIcon(number) {
   });
 }
 
+// Function to update selected markers based on the sortable list order
 function updateSelectedMarkersFromList() {
   const sortableList = document.getElementById("sortable-list");
   const newOrder = Array.from(sortableList.children).map((item) => {
@@ -193,16 +202,21 @@ function updateSelectedMarkersFromList() {
   displaySelectedAddresses(); // Refresh list with updated numbering
 }
 
+// Initialize the map and markers
 document.getElementById("update-markers-btn").addEventListener("click", () => {
   updateSelectedMarkersFromList();
 });
 
-function addMarkers() {
-  const addressInput = document.getElementById("address-input").value;
-  const addresses = addressInput
+// Function to add markers based on user input
+async function addMarkers() {
+  const addresses = document.getElementById("address-input").value
     .split("\n")
-    .map((addr) => addr.trim())
-    .filter((addr) => addr);
+    .map(addr => addr.trim())
+    .filter(addr => addr);
+
+  // Start the loading indicator
+  LoadingIndicator.start(addresses.length);
+  let processed = 0;
 
   // Assign sequence numbers first
   const addressWithNumbers = addresses.map((address, index) => ({
@@ -214,19 +228,20 @@ function addMarkers() {
   const geocodePromises = addressWithNumbers.map(async (item) => {
     const coords = await DataBaseGeolocation(item.address);
 
-    // Fetch coordinates for each address from
     if (coords && coords.lat !== undefined && coords.lon !== undefined) {
       console.log(`DB found ${item.address}`, coords);
+      LoadingIndicator.update(++processed);
       return {
         coords: [coords.lat, coords.lon],
         ...item,
-      }; // Convert to Leaflet format
+      };
     }
 
     // If database lookup fails, try OpenCage geocoding
     const openCageCoords = await openCageGeocode(item.address);
     if (openCageCoords) {
       console.log(`OpenCage found ${item.address}`, openCageCoords);
+      LoadingIndicator.update(++processed);
       return {
         coords: openCageCoords,
         ...item,
@@ -236,26 +251,29 @@ function addMarkers() {
 
     // Both geocoding attempts failed
     console.warn(`Failed to geocode address: ${item.address}`);
+    LoadingIndicator.update(++processed);
     return null;
   });
 
-  // After all geocoding requests are done, add the markers
+  // After all geocoding requests are done
   Promise.all(geocodePromises).then((results) => {
     results.forEach((result) => {
       if (result && result.coords) {
-        // Ensure valid results
         const marker = L.marker(result.coords, { icon: greenIcon }).addTo(map);
         marker.address = result.address;
-        marker.number = result.number; // Assign the sequence number
+        marker.number = result.number;
         marker.on("click", () => toggleMarkerSelection(marker));
         selectedMarkers.push(marker);
       }
     });
 
-    displaySelectedAddresses(); // Update the list after all markers are added
+    // Stop the loading indicator and update the display
+    LoadingIndicator.stop();
+    displaySelectedAddresses();
   });
 }
 
+// Function to display selected addresses in the sortable list
 function displaySelectedAddresses() {
   const sortableList = document.getElementById("sortable-list");
   sortableList.innerHTML = ""; // Clear the list
@@ -287,6 +305,7 @@ function displaySelectedAddresses() {
   });
 }
 
+// Function to copy selected markers' addresses to clipboard as CSV
 function copySelectedMarkersToClipboard() {
   const csvHeader = "Address";
   const csvContent = selectedMarkers
@@ -349,3 +368,33 @@ function toggleMarkerSelection(marker) {
     }
   });
 }
+
+// Loading indicator manager
+const LoadingIndicator = {
+    element: null,
+    processedCount: null,
+    totalCount: null,
+
+    init() {
+        this.element = document.getElementById('loading-indicator');
+        this.processedCount = document.getElementById('processed-count');
+        this.totalCount = document.getElementById('total-count');
+    },
+
+    start(total) {
+        this.element.classList.remove('hidden');
+        this.totalCount.textContent = total;
+        this.processedCount.textContent = '0';
+    },
+
+    update(processed) {
+        this.processedCount.textContent = processed;
+    },
+
+    stop() {
+        this.element.classList.add('hidden');
+    }
+};
+
+// Initialize the loading indicator
+LoadingIndicator.init();
