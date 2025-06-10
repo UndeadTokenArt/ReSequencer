@@ -1,4 +1,3 @@
-
 let tabCount = 1;
 var selectedMarkers = [];
 const geocodeCache = {};
@@ -10,18 +9,21 @@ var greenIcon = L.icon({
   popupAnchor: [1, -34],
 });
 
-// Prompt for API key on page load and store it
+// Replace the automatic API key prompt with this code
 let apiKey = sessionStorage.getItem("apiKey");
-if (!apiKey) {
-  apiKey = prompt("Please enter your OpenCage API key:");
-  if (apiKey && apiKey.match(/^[a-zA-Z0-9]{32}$/)) {
+
+function promptForApiKey() {
+  const newApiKey = prompt("Please enter your OpenCage API key:");
+  if (newApiKey && newApiKey.match(/^[a-zA-Z0-9]{32}$/)) {
+    apiKey = newApiKey;
     sessionStorage.setItem("apiKey", apiKey);
+    alert("API key set successfully!");
   } else {
-    alert("Invalid or missing API key. Geolocation features will not work.");
+    alert(
+      "Invalid API key format. Key should be 32 characters long and contain only letters and numbers."
+    );
   }
 }
-
-const sortable = document.getElementById("sortable-list");
 
 // Map initialization
 let map;
@@ -54,6 +56,9 @@ function initMap() {
 // Initialize the map as soon as the page loads
 document.addEventListener("DOMContentLoaded", () => {
   initMap();
+
+  // Add event listener for the API key button
+  document.getElementById("set-api-key").addEventListener("click", promptForApiKey);
 });
 
 function updateSelectedMarkersFromList() {
