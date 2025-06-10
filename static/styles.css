@@ -1,4 +1,9 @@
-/* general styles */
+/* ===========================================================================
+   1. General styles
+   ========================================================================== 
+   This file contains the general styles for the application, including layout,
+   buttons, inputs, loading indicators, markers, and API status.
+*/
 body {
   display: flex;
   flex-direction: row;
@@ -37,6 +42,7 @@ body {
   color: #fff;
   padding: 20px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  overflow-y: auto;
 }
 
 /* ==========================================================================
@@ -250,13 +256,13 @@ ul {
   list-style-type: none;
   padding: 0;
   margin: 10px 0;
-  background: #f8f9fa;
-  border-radius: 5px;
-  overflow-y: auto;
-  max-height: 600px; /* Prevents long lists from taking over */
+  background: #363636;
+  border-radius: 2px;
+  overflow-y:scroll
+  max-height: fit-content;
 }
 
 li {
   padding: 10px;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #363636;
 }

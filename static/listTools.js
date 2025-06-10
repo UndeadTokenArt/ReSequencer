@@ -28,7 +28,8 @@ document.getElementById("sortable-list").addEventListener("click", (e) => {
     }
   }
 });
-
+// Initialize the sortable list
+const sortable = document.getElementById("sortable-list");
 // Initialize the sortable list
 let draggedItems = [];
 
