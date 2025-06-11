@@ -2,10 +2,13 @@ let tabCount = 1;
 var selectedMarkers = [];
 const geocodeCache = {};
 
+let routeLine = null;
+let markerSize = 60;
+
 var greenIcon = L.icon({
   iconUrl: "../static/greendot.svg",
-  iconSize: [60, 60],
-  iconAnchor: [30, 30],
+  iconSize: [markerSize, markerSize],
+  iconAnchor: [markerSize / 2, markerSize / 2],
   popupAnchor: [1, -34],
 });
 
@@ -58,7 +61,9 @@ document.addEventListener("DOMContentLoaded", () => {
   initMap();
 
   // Add event listener for the API key button
-  document.getElementById("set-api-key").addEventListener("click", promptForApiKey);
+  document
+    .getElementById("set-api-key")
+    .addEventListener("click", promptForApiKey);
 });
 
 function updateSelectedMarkersFromList() {
@@ -117,3 +122,61 @@ function centerMapOnSelectedMarkers() {
 document.getElementById("center-map-btn").addEventListener("click", () => {
   centerMapOnSelectedMarkers();
 });
+
+function updateMarkerSizes(size) {
+  markerSize = size;
+  // Update icon definition
+  greenIcon = L.icon({
+    iconUrl: "../static/greendot.svg",
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+    popupAnchor: [1, -34],
+  });
+
+  // Update existing markers
+  selectedMarkers.forEach((marker) => {
+    marker.setIcon(greenIcon);
+  });
+}
+
+function updateRouteLine() {
+  // Remove existing line if it exists
+  if (routeLine && map.hasLayer(routeLine)) {
+    map.removeLayer(routeLine);
+  }
+
+  // If route display is enabled and we have markers
+  if (document.getElementById("show-route").checked && selectedMarkers.length > 0) {
+    const points = selectedMarkers.map((marker) => marker.getLatLng());
+    routeLine = L.polyline(points, {
+      color: "blue",
+      weight: 2,
+      dashArray: "5, 10",
+      opacity: 0.6,
+    }).addTo(map);
+  }
+}
+
+// Add this to your document.addEventListener("DOMContentLoaded", ...)
+document.addEventListener("DOMContentLoaded", () => {
+  // ...existing code...
+
+  // Add marker size control
+  const sizeSlider = document.getElementById("marker-size");
+  const sizeValue = document.getElementById("size-value");
+
+  sizeSlider.addEventListener("input", (e) => {
+    const size = parseInt(e.target.value);
+    sizeValue.textContent = `${size}px`;
+    updateMarkerSizes(size);
+  });
+
+  // Add route line toggle
+  document.getElementById("show-route").addEventListener("change", updateRouteLine);
+});
+
+// Update displaySelectedAddresses to call updateRouteLine
+function displaySelectedAddresses() {
+  // ...existing code...
+  updateRouteLine();
+}
